@@ -2,31 +2,33 @@ package main
 
 import (
         "fmt"
+        "math"
         "log"
+        t "github.com/noaoh/raytracer/models/tuple"
+        c "github.com/noaoh/raytracer/canvas"
 )
 
 type Projectile struct {
-        position Tuple
-        velocity Tuple
+        position t.Tuple
+        velocity t.Tuple
 }
 
 type World struct {
-        gravity Tuple
-        wind Tuple
+        gravity t.Tuple
+        wind t.Tuple
 }
 
 func tick(w World, p Projectile) (Projectile, error) {
-        log.Printf("Projectile before tick: +%v\n", p)
 
-        pos, err := Add(p.position, p.velocity); if err != nil {
+        pos, err := t.Add(p.position, p.velocity); if err != nil {
                 return Projectile{}, err
         }
 
-        world_vel, err := Add(w.gravity, w.wind); if err != nil {
+        world_vel, err := t.Add(w.gravity, w.wind); if err != nil {
                 return Projectile{}, err
         }
 
-        vel, err := Add(p.velocity, world_vel); if err != nil {
+        vel, err := t.Add(p.velocity, world_vel); if err != nil {
                return Projectile{}, err
         }
 
@@ -34,19 +36,30 @@ func tick(w World, p Projectile) (Projectile, error) {
 }
 
 func main() {
-        pos := Tuple{x: 0, y: 1, z: 0, w: 1}
+        pos := t.Tuple{X: 0, Y: 1, Z: 0, W: 1}
 
-        v, err := Normalize(Tuple{x: 1, y: 1, z: 0, w: 0}); if err != nil {
+        norm, err := t.Normalize(t.Tuple{X: 1, Y: 1.8, Z: 0, W: 0}) 
+
+        if err != nil {
                 log.Println(err)
         }
 
+        v := t.Multiply(norm, 11.25)
+        v.W = 0
+
         p := Projectile{position: pos, velocity: v}
-        grav := Tuple{x: 0, y: -0.1, z: 0, w: 0}
-        wind := Tuple{x: -0.01, y: 0, z: 0, w: 0}
+        grav := t.Tuple{X: 0, Y: -0.1, Z: 0, W: 0}
+        wind := t.Tuple{X: -0.01, Y: 0, Z: 0, W: 0}
         world := World{gravity: grav, wind: wind}
+        canvas := c.Canvas(550, 900)
+        red := c.Color{R: 1.0, G: 0.0, B: 0.0}
         numTicks := 0
         for {
-                if (p.position.y <= 0) {
+                fmt.Printf("%+v\n", p)
+                x := int(math.Round(math.Abs(p.position.X)))
+                y := int(math.Round(math.Abs(p.position.Y)))
+                canvas.Write(x, y, red)
+                if (p.position.Y <= 0) {
                         break
                 }
         
@@ -57,4 +70,5 @@ func main() {
                 numTicks += 1
         }
         fmt.Printf("%d ticks to hit the ground\n", numTicks)
+        canvas.WriteFile("test.ppm")
 }

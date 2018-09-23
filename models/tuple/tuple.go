@@ -1,4 +1,4 @@
-package main 
+package tuple 
 
 import (
         "math"
@@ -6,18 +6,18 @@ import (
 )
 
 type Tuple struct  {
-        x float64 
-        y float64
-        z float64
-        w float64
+        X float64 
+        Y float64
+        Z float64
+        W float64
 }
 
 func (t Tuple) isPoint() bool {
-        return t.w == 1.0;
+        return t.W == 1.0;
 }
 
 func (t Tuple) isVector() bool {
-        return t.w == 0.0;
+        return t.W == 0.0;
 }
 
 func Add(a, b Tuple) (Tuple, error) {
@@ -25,7 +25,7 @@ func Add(a, b Tuple) (Tuple, error) {
                 return Tuple {}, errors.New("Can not add a point to a point\n")
         }
 
-        return Tuple{x: a.x + b.x, y: a.y + b.y, z: a.z + b.z, w: a.w + b.w}, nil
+        return Tuple{X: a.X + b.X, Y: a.Y + b.Y, Z: a.Z + b.Z, W: a.W + b.W}, nil
 }
 
 func Subtract(a, b Tuple) (Tuple, error) {
@@ -33,30 +33,28 @@ func Subtract(a, b Tuple) (Tuple, error) {
                 return Tuple{}, errors.New("Can not subtract a vector from a point\n")
         }
 
-
-        return Tuple{x: a.x - b.x, y: a.y - b.y, z: a.z - b.z, w: a.w - b.w}, nil
-
+        return Tuple{X: a.X - b.X, Y: a.Y - b.Y, Z: a.Z - b.Z, W: a.W - b.W}, nil
 }
 
 func Negate(a Tuple) Tuple {
-        return Tuple{x: a.x * -1, y: a.y * -1, z: a.z * -1, w: a.w * -1}
+        return Tuple{X: a.X * -1, Y: a.Y * -1, Z: a.Z * -1, W: a.W * -1}
 }
 
 func Multiply(a Tuple, f float64) Tuple {
-        return Tuple{x: a.x * f, y: a.y * f, z: a.z * f, w: a.w * f}
+        return Tuple{X: a.X * f, Y: a.Y * f, Z: a.Z * f, W: a.W * f}
 }
 
 func Magnitude(a Tuple) float64 {
-        sum := math.Pow(a.x, 2) + math.Pow(a.y, 2) + math.Pow(a.z, 2) + math.Pow(a.w, 2)
+        sum := math.Pow(a.X, 2) + math.Pow(a.Y, 2) + math.Pow(a.Z, 2) + math.Pow(a.W, 2)
         return math.Sqrt(sum)
 }
 
 func Normalize(a Tuple) (Tuple, error) {
         m := Magnitude(a)
         if m == 0 {
-                return Tuple {}, errors.New("Can not divide by zero\n")
+                return Tuple {}, errors.New("Can not divide bY Zero\n")
         }
-        return Tuple { x: a.x / m, y: a.y / m, z: a.z / m, w: a.w / m }, nil
+        return Tuple { X: a.X / m, Y: a.Y / m, Z: a.Z / m, W: a.W / m }, nil
 }
 
 func Dot(t1, t2 Tuple) (float64, error) {
@@ -64,7 +62,7 @@ func Dot(t1, t2 Tuple) (float64, error) {
                 return 1.0, errors.New("Can not perform dot product on points\n")
         }
 
-        return (t1.x * t2.x) + (t1.y * t2.y) + (t1.z * t2.z) + (t1.w * t2.w), nil
+        return (t1.X * t2.X) + (t1.Y * t2.Y) + (t1.Z * t2.Z) + (t1.W * t2.W), nil
 }
 
 func Cross(t1, t2 Tuple) (Tuple, error) {
@@ -72,10 +70,10 @@ func Cross(t1, t2 Tuple) (Tuple, error) {
                 return Tuple {}, errors.New("Can not perform cross product on points\n")
         }
 
-        zy := t1.y * t2.z - t2.z * t1.y
-        zx := t1.z * t2.x - t1.x * t1.z
-        xy := t1.x * t2.y - t1.y * t2.x
-        return Tuple { x: zy, y: zx, z: xy, w: t1.w}, nil
+        zy := t1.Y * t2.Z - t2.Z * t1.Y
+        zx := t1.Z * t2.X - t1.X * t1.Z
+        xy := t1.X * t2.Y - t1.Y * t2.X
+        return Tuple { X: zy, Y: zx, Z: xy, W: t1.W}, nil
 }
 
 
