@@ -14,7 +14,7 @@ func Subtract(x, y Color) Color {
         return Color {R: x.R - y.R, G: x.G - y.G, B: x.B - y.B}
 }
 
-func Multiply(x Color, f float64) Color {
+func MultiplyScalar(x Color, f float64) Color {
         return Color {R: x.R * f, G: x.G * f, B: x.B * f}
 }
 
