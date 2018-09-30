@@ -51,17 +51,17 @@ func main() {
         grav := t.Tuple{X: 0, Y: -0.1, Z: 0, W: 0}
         wind := t.Tuple{X: -0.01, Y: 0, Z: 0, W: 0}
         world := World{gravity: grav, wind: wind}
-        canvas := c.Canvas(550, 900)
+        canvas := c.CreateCanvas(900, 550)
         red := c.Color{R: 1.0, G: 0.0, B: 0.0}
         numTicks := 0
         for {
-                fmt.Printf("%+v\n", p)
-                x := int(math.Round(math.Abs(p.position.X)))
-                y := int(math.Round(math.Abs(p.position.Y)))
-                canvas.Write(x, y, red)
-                if (p.position.Y <= 0) {
+                if p.position.Y <= 0 {
                         break
                 }
+                fmt.Printf("%+v\n", p)
+                x := int(math.Round(math.Abs(p.position.X)))
+                y := int(math.Round(math.Abs(float64(canvas.Height) - p.position.Y)))
+                canvas.Write(x, y, red)
         
                 p, err = tick(world, p); if err != nil {
                         log.Println(err)
