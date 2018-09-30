@@ -5,27 +5,28 @@ import (
         "os"
 )
 
-type canvas struct {
+type Canvas struct {
         Width int
         Height int
         Pixels [][]Color
 }
 
-func Canvas(w, h int) canvas {
+func CreateCanvas(w, h int) Canvas {
         p := make([][]Color, h)
         for x := range p {
                 p[x] = make([]Color, w)
         }
 
-        return canvas{Width: w, Height: h, Pixels: p}
+        return Canvas{Width: w, Height: h, Pixels: p}
 }
 
-func (c *canvas) Write(x, y int, col Color) {
-        c.Pixels[x][y] = col
+func (c *Canvas) Write(w, h int, col Color) {
+        c.Pixels[h][w] = col
 }
 
-func (c *canvas) WriteFile(fh string) error {
+func (c *Canvas) WriteFile(fh string) error {
         f, err := os.Create(fh); if err != nil {
+                os.Remove(fh)
                 return err
         }
         defer f.Close()
