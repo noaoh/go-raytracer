@@ -44,7 +44,7 @@ func TestIdentityMatrix(t *testing.T) {
 
 	for i, x := range e {
 		t.Run(string(i), func(t *testing.T) {
-			z := identityMatrix(a[i])
+			z := IdentityMatrix(a[i])
 			if !Equal(z, x) {
 				t.Logf("%+v != %+v", z, x)
 				t.Fail()
@@ -88,7 +88,7 @@ func TestMultiply(t *testing.T) {
 					{0.0, 0.0, 0.0, 1.0},
 				},
 			},
-			fromTuple(tup.Tuple{X: 1.0, Y: 2.0, Z: 3.0, W: 1.0}),
+			FromTuple(tup.Tuple{X: 1.0, Y: 2.0, Z: 3.0, W: 1.0}),
 		},
 	}
 
@@ -114,7 +114,8 @@ func TestMultiply(t *testing.T) {
 		t.Run(string(i), func(t *testing.T) {
 			j := a[i][0]
 			k := a[i][1]
-			y, _ := Multiply(j, k); if !Equal(y, x) {
+			y, _ := Multiply(j, k)
+			if !Equal(y, x) {
 				t.Logf("%+v != %+v\n", y, x)
 				t.Fail()
 			}
@@ -125,14 +126,14 @@ func TestMultiply(t *testing.T) {
 
 func TestDeterminant(t *testing.T) {
 	a := []Matrix{
-                Matrix{
-                        Rows: 2,
-                        Cols: 2,
-                        Data: [][]float64{
-                                {1, 5},
-                                {-3, 2},
-                        },
-                },
+		Matrix{
+			Rows: 2,
+			Cols: 2,
+			Data: [][]float64{
+				{1, 5},
+				{-3, 2},
+			},
+		},
 		Matrix{
 			Rows: 2,
 			Cols: 2,
@@ -269,95 +270,97 @@ func TestSubmatrix(t *testing.T) {
 }
 
 func TestMinor(t *testing.T) {
-        a := []Matrix {
-                Matrix {
-                        Rows: 3,
-                        Cols: 3,
-                        Data: [][]float64 {
-                                {3, 5, 0},
-                                {2, -1, -7},
-                                {6, -1, 5},
-                        },
-                },
-                Matrix {
-                        Rows: 3,
-                        Cols: 3,
-                        Data: [][]float64 {
-                                {1, 2, 6},
-                                {-5, 8, -4},
-                                {2, 6, 4},
-                        },
-                },
-                Matrix {
-                        Rows: 4,
-                        Cols: 4,
-                        Data: [][]float64 {
-                                {-2, -8, 3, 5},
-                                {-3, 1, 7, 3},
-                                {1, 2, -9, 6},
-                                {-6, 7, 7, -9},
-                        },
-                },
-        }
+	a := []Matrix{
+		Matrix{
+			Rows: 3,
+			Cols: 3,
+			Data: [][]float64{
+				{3, 5, 0},
+				{2, -1, -7},
+				{6, -1, 5},
+			},
+		},
+		Matrix{
+			Rows: 3,
+			Cols: 3,
+			Data: [][]float64{
+				{1, 2, 6},
+				{-5, 8, -4},
+				{2, 6, 4},
+			},
+		},
+		Matrix{
+			Rows: 4,
+			Cols: 4,
+			Data: [][]float64{
+				{-2, -8, 3, 5},
+				{-3, 1, 7, 3},
+				{1, 2, -9, 6},
+				{-6, 7, 7, -9},
+			},
+		},
+	}
 
-        e := []float64 {25, -46, -51}
+	e := []float64{25, -46, -51}
 
-        in := [][]int {{1, 0}, {0, 2}, {0, 3}}
+	in := [][]int{{1, 0}, {0, 2}, {0, 3}}
 
-        for i, x := range e {
-                t.Run(string(i), func(t *testing.T) {
-                        c := a[i].Minor(in[i][0], in[i][1]); if c != x {
-                                t.Logf("%+v != %+v", c, x)
-                                t.Fail()
-                        }
-                })
-        }
+	for i, x := range e {
+		t.Run(string(i), func(t *testing.T) {
+			c := a[i].Minor(in[i][0], in[i][1])
+			if c != x {
+				t.Logf("%+v != %+v", c, x)
+				t.Fail()
+			}
+		})
+	}
 }
 
 func TestCofactor(t *testing.T) {
-        a := []Matrix {
-                Matrix {
-                        Rows: 3,
-                        Cols: 3,
-                        Data: [][]float64 {
-                                {3, 5, 0},
-                                {2, -1, -7},
-                                {6, -1, 5},
-                        },
-                },
-                Matrix {
-                        Rows: 3,
-                        Cols: 3,
-                        Data: [][]float64 {
-                                {1, 2, 6},
-                                {-5, 8, -4},
-                                {2, 6, 4},
-                        },
-                },
-                Matrix {
-                        Rows: 4,
-                        Cols: 4,
-                        Data: [][]float64 {
-                                {-2, -8, 3, 5},
-                                {-3, 1, 7, 3},
-                                {1, 2, -9, 6},
-                                {-6, 7, 7, -9},
-                        },
-                },
-        }
+	a := []Matrix{
+		Matrix{
+			Rows: 3,
+			Cols: 3,
+			Data: [][]float64{
+				{3, 5, 0},
+				{2, -1, -7},
+				{6, -1, 5},
+			},
+		},
+		Matrix{
+			Rows: 3,
+			Cols: 3,
+			Data: [][]float64{
+				{1, 2, 6},
+				{-5, 8, -4},
+				{2, 6, 4},
+			},
+		},
+		Matrix{
+			Rows: 4,
+			Cols: 4,
+			Data: [][]float64{
+				{-2, -8, 3, 5},
+				{-3, 1, 7, 3},
+				{1, 2, -9, 6},
+				{-6, 7, 7, -9},
+			},
+		},
+	}
 
-        e := []float64 {-25, -46, 51}
+	e := []float64{-25, -46, 51}
 
-        in := [][]int {{1, 0}, {0, 2}, {0, 3}}
+	in := [][]int{{1, 0}, {0, 2}, {0, 3}}
 
-        for i, x := range e {
-                t.Run(string(i), func(t *testing.T) {
-                        c := a[i].Cofactor(in[i][0], in[i][1]); if c != x {
-                                t.Logf("%+v != %+v", c, x)
-                                t.Fail()
-                        }
-                })
-        }
+	for i, x := range e {
+		t.Run(string(i), func(t *testing.T) {
+			c := a[i].Cofactor(in[i][0], in[i][1])
+			if c != x {
+				t.Logf("%+v != %+v", c, x)
+				t.Fail()
+			}
+		})
+	}
 }
 
 func TestTranspose(t *testing.T) {
@@ -372,7 +375,7 @@ func TestTranspose(t *testing.T) {
 				{0, 0, 5, 8},
 			},
 		},
-		identityMatrix(4),
+		IdentityMatrix(4),
 	}
 
 	e := []Matrix{
@@ -383,10 +386,10 @@ func TestTranspose(t *testing.T) {
 				{0, 9, 1, 0},
 				{9, 8, 8, 0},
 				{3, 0, 5, 5},
-				{0, 8, 3, 3},
+				{0, 8, 3, 8},
 			},
 		},
-		identityMatrix(4),
+		IdentityMatrix(4),
 	}
 
 	for i, x := range e {
@@ -394,104 +397,85 @@ func TestTranspose(t *testing.T) {
 			tr := Transpose(a[i])
 			if !Equal(tr, x) {
 				t.Logf("%+v != %+v", tr, x)
+				t.Fail()
 			}
 		})
 	}
 }
 
 func TestInverse(t *testing.T) {
-        a := []Matrix {
-                Matrix {
-                        Rows: 4,
-                        Cols: 4,
-                        Data: [][]float64 {
-                                {6, 4, 4, 4},
-                                {5, 5, 6, 6},
-                                {4, -9, 3, -7},
-                                {9, 1, 7, -6},
-                        },
-                },
-                Matrix {
-                        Rows: 4,
-                        Cols: 4,
-                        Data: [][]float64 {
-                                {-5, 2, 6, -8},
-                                {1, -5, 1, 8},
-                                {7, 7, -6, -7},
-                                {1, -3, 7, 4},
-                        },
-                },
-                Matrix {
-                        Rows: 4,
-                        Cols: 4,
-                        Data: [][]float64 {
-                                {8, -5, 9, 2},
-                                {7, 5, 6, 1},
-                                {-6, 0, 9, 6},
-                                {-3, 0, -9, -4},
-                        },
-                },
-                Matrix {
-                        Rows: 4,
-                        Cols: 4,
-                        Data: [][]float64 {
-                            { 9, 3, 0, 9},
-                            {-5, -2, -6, -3},
-                            {-4, 9, 6, 4},
-                            {-7, 6, 6, 2},
-                        },
-                },
-        }
+	a := []Matrix{
+		Matrix{
+			Rows: 4,
+			Cols: 4,
+			Data: [][]float64 {
+				{-5, 2, 6, -8},
+				{1, -5, 1, 8},
+				{7, 7, -6, -7},
+				{1, -3, 7, 4},
+			},
+		},
+		Matrix{
+			Rows: 4,
+			Cols: 4,
+			Data: [][]float64 {
+				{8, -5, 9, 2},
+				{7, 5, 6, 1},
+				{-6, 0, 9, 6},
+				{-3, 0, -9, -4},
+			},
+		},
+		Matrix{
+			Rows: 4,
+			Cols: 4,
+			Data: [][]float64 {
+				{9, 3, 0, 9},
+				{-5, -2, -6, -3},
+				{-4, 9, 6, 4},
+				{-7, 6, 6, 2},
+			},
+		},
+	}
 
-        e := []Matrix {
-                Matrix {
-                        Rows: 4,
-                        Cols: 4,
-                        Data: [][]float64 {
-                                {607.0/1570, -192.0/785, 26.0/785, -4.0/157},
-                                {-73.0/1570, -17.0/785, -104.0/785, 16.0/157},
-                                {-62.0/157, 55.0/157, 4.0/157, 9.0/157},
-                                {35.0/314, 6.0/157, 9.0/157, -19.0/157},
-                        },
-                        
-
-                },
-                Matrix {
-                        Rows: 4,
-                        Cols: 4,
-                        Data: [][]float64 {
-                                {29.0/133, 60.0/133, 32.0/133, -6.0/133},
-                                {-215.0/266, -775.0/532, -59.0/133, 277.0/532},
-                                {-3.0/38, -17.0/76, -1.0/19, 15.0/76},
-                                {-139.0/266, -433.0/532, -40.0/133, 163.0/532},
-                        },
-                },
-                Matrix {
-                        Rows: 4,
-                        Cols: 4,
-                        Data: [][]float64 {
-                            {-0.15385, -0.15385, -0.28205, -0.53846},
-                            {-0.07692, 0.12308, 0.02564, 0.03077},
-                            { 0.35897, 0.35897, 0.43590, 0.92308},
-                            {-0.69231, -0.69231, -0.76923, -1.92308},
-                        },
-                },
-                Matrix {
-                        Rows: 4,
-                        Cols: 4,
-                        Data: [][]float64 {
-                            {-0.04074, -0.07778, 0.14444, -0.22222},
-                            {-0.07778, 0.03333, 0.36667, -0.33333},
-                            {-0.02901, -0.14630, -0.10926, 0.12963},
-                            { 0.17778, 0.06667, -0.26667, 0.33333},
-                    },
-                },
-        }
+	e := []Matrix{
+		Matrix{
+			Rows: 4,
+			Cols: 4,
+			Data: [][]float64 {
+				{0.21805, 0.45113, 0.24060, -0.04511},
+				{-0.80827, -1.45677, -0.44361, 0.52068},
+				{-0.07895, -0.22368, -0.05263, 0.19737},
+				{-0.52256, -0.81391, -0.30075, 0.30639},
+			},
+		},
+		Matrix{
+			Rows: 4,
+			Cols: 4,
+			Data: [][]float64 {
+				{-0.15385, -0.15385, -0.28205, -0.53846},
+				{-0.07692, 0.12308, 0.02564, 0.03077},
+				{0.35897, 0.35897, 0.43590, 0.92308},
+				{-0.69231, -0.69231, -0.76923, -1.92308},
+			},
+		},
+		Matrix{
+			Rows: 4,
+			Cols: 4,
+			Data: [][]float64 {
+				{-0.04074, -0.07778, 0.14444, -0.22222},
+				{-0.07778, 0.03333, 0.36667, -0.33333},
+				{-0.02901, -0.14630, -0.10926, 0.12963},
+				{0.17778, 0.06667, -0.26667, 0.33333},
+			},
+		},
+	}
 
 	for i, x := range e {
 		t.Run(string(i), func(t *testing.T) {
-			inv, _ := a[i].Inverse(); if !Equal(inv, x) {
+			inv, _ := a[i].Inverse()
+			if !Equal(inv, x) {
 				t.Logf("%+v != %+v", inv, x)
+				t.Fail()
 			}
 		})
 	}
