@@ -14,10 +14,10 @@ type Matrix struct {
 
 func FloatEqual(a, b float64) bool {
 	epsilon := .00001
-	return (math.Abs(a - b) < epsilon)
+	return (math.Abs(a-b) < epsilon)
 }
 
-func matrix(r, c int) Matrix {
+func CreateMatrix(r, c int) Matrix {
 	m := Matrix{Rows: r, Cols: c}
 	m.Data = make([][]float64, r)
 	for x := range m.Data {
@@ -26,8 +26,8 @@ func matrix(r, c int) Matrix {
 	return m
 }
 
-func identityMatrix(r int) Matrix {
-	m := matrix(r, r)
+func IdentityMatrix(r int) Matrix {
+	m := CreateMatrix(r, r)
 	for i := 0; i < r; i++ {
 		m.Data[i][i] = 1
 	}
@@ -49,10 +49,10 @@ func (m Matrix) Col(y int) []float64 {
 
 func Multiply(a, b Matrix) (Matrix, error) {
 	if a.Cols != b.Rows {
-		return Matrix{}, fmt.Errorf("The number of columns in matrix a must be the same as the number of rows in matrix b for matrix multiplication: %+v %+v", a, b)
+		return Matrix{}, fmt.Errorf("The number of columns in matrix a must be the same as the number of rows in matrix b for matrix multiplication: a = %+v, b = %+v", a, b)
 	}
 
-	m := matrix(a.Rows, b.Cols)
+	m := CreateMatrix(a.Rows, b.Cols)
 	for i := 0; i < a.Rows; i++ {
 		for j := 0; j < b.Cols; j++ {
 			var sum float64 = 0
@@ -66,8 +66,8 @@ func Multiply(a, b Matrix) (Matrix, error) {
 	return m, nil
 }
 
-func fromTuple(tup t.Tuple) Matrix {
-	m := matrix(4, 1)
+func FromTuple(tup t.Tuple) Matrix {
+	m := CreateMatrix(4, 1)
 	m.Data[0][0] = tup.X
 	m.Data[1][0] = tup.Y
 	m.Data[2][0] = tup.Z
@@ -76,7 +76,7 @@ func fromTuple(tup t.Tuple) Matrix {
 }
 
 func Transpose(m Matrix) Matrix {
-	r := matrix(m.Cols, m.Rows)
+	r := CreateMatrix(m.Cols, m.Rows)
 
 	for y, s := range m.Data {
 		for x, e := range s {
@@ -88,7 +88,7 @@ func Transpose(m Matrix) Matrix {
 }
 
 func (m Matrix) SubMatrix(row, col int) Matrix {
-	res := matrix(m.Rows-1, m.Cols-1)
+	res := CreateMatrix(m.Rows-1, m.Cols-1)
 
 	ri := 0
 	for i, r := range m.Data {
@@ -123,12 +123,12 @@ func (m Matrix) Cofactor(row, col int) float64 {
 func (m Matrix) Determinant() (float64, error) {
 	res := 0.0
 	if m.Rows != m.Cols {
-		return 1, fmt.Errorf("Matrix must have same number of columns and rows to compute determinate: %+v", m)
+		return 1, fmt.Errorf("Matrix must have same number of columns and rows to compute determinant: %+v", m)
 	} else if m.Rows == 2 {
 		return m.Data[0][0]*m.Data[1][1] - m.Data[0][1]*m.Data[1][0], nil
 	} else {
 		for j := 0; j < m.Cols; j++ {
-			res += m.Cofactor(0, j) * m.Data[0][j] 
+			res += m.Cofactor(0, j) * m.Data[0][j]
 		}
 	}
 	return res, nil
@@ -141,14 +141,14 @@ func (m Matrix) Inverse() (Matrix, error) {
 
 	d, _ := m.Determinant()
 
-        if d == 0 {
-                return Matrix{}, fmt.Errorf("Determinant of matrix must not be zero: %+v", m)
-        }
+	if d == 0 {
+		return Matrix{}, fmt.Errorf("Determinant of matrix must not be zero: %+v", m)
+	}
 
-	r := matrix(m.Rows, m.Cols)
+	r := CreateMatrix(m.Rows, m.Cols)
 	for i := 0; i < r.Rows; i++ {
 		for j := 0; j < r.Cols; j++ {
-			r.Data[i][j] = m.Minor(i, j) / float64(d)
+			r.Data[i][j] = m.Cofactor(i, j) / float64(d)
 		}
 	}
 
@@ -169,4 +169,68 @@ func Equal(m, n Matrix) bool {
 	}
 
 	return true
+}
+
+func TranslationMatrix(x, y, z float64) Matrix {
+	m := IdentityMatrix(4)
+	m.Data[0][3] = x
+	m.Data[1][3] = y
+	m.Data[2][3] = z
+	return m
+}
+
+func ScalingMatrix(x, y, z float64) Matrix {
+	m := IdentityMatrix(4)
+	m.Data[0][0] = x
+	m.Data[1][1] = y
+	m.Data[2][2] = z
+	return m
+}
+
+func XAxisRotationMatrix(r float64) Matrix {
+	m := IdentityMatrix(4)
+	cos := math.Cos(r)
+	sin := math.Sin(r)
+
+	m.Data[1][1] = cos
+	m.Data[1][2] = -1 * sin
+	m.Data[2][1] = sin
+	m.Data[2][2] = cos
+	return m
+}
+
+func YAxisRotationMatrix(r float64) Matrix {
+	m := IdentityMatrix(4)
+	cos := math.Cos(r)
+	sin := math.Sin(r)
+
+	m.Data[0][0] = cos
+	m.Data[0][2] = sin
+	m.Data[2][0] = -1 * sin
+	m.Data[2][2] = cos
+	return m
+}
+
+func ZAxisRotationMatrix(r float64) Matrix {
+	m := IdentityMatrix(4)
+	cos := math.Cos(r)
+	sin := math.Sin(r)
+
+	m.Data[0][0] = cos
+	m.Data[0][1] = -1 * sin
+	m.Data[1][0] = sin
+	m.Data[1][1] = cos
+	return m
+}
+
+func ShearingMatrix(xy, xz, yx, yz, zx, zy float64) Matrix {
+	m := IdentityMatrix(4)
+
+	m.Data[0][1] = xy
+	m.Data[0][2] = xz
+	m.Data[1][0] = yx
+	m.Data[1][2] = yz
+	m.Data[2][0] = zx
+	m.Data[2][1] = zy
+	return m
 }
