@@ -4,31 +4,31 @@ import (
         "fmt"
         "math"
         "log"
-        t "github.com/noaoh/raytracer/models/tuple"
+        m "github.com/noaoh/raytracer/models"
         c "github.com/noaoh/raytracer/canvas"
 )
 
 type Projectile struct {
-        position t.Tuple
-        velocity t.Tuple
+        position m.Tuple
+        velocity m.Tuple
 }
 
 type World struct {
-        gravity t.Tuple
-        wind t.Tuple
+        gravity m.Tuple
+        wind m.Tuple
 }
 
 func tick(w World, p Projectile) (Projectile, error) {
 
-        pos, err := t.Add(p.position, p.velocity); if err != nil {
+        pos, err := m.Add(p.position, p.velocity); if err != nil {
                 return Projectile{}, err
         }
 
-        world_vel, err := t.Add(w.gravity, w.wind); if err != nil {
+        world_vel, err := m.Add(w.gravity, w.wind); if err != nil {
                 return Projectile{}, err
         }
 
-        vel, err := t.Add(p.velocity, world_vel); if err != nil {
+        vel, err := m.Add(p.velocity, world_vel); if err != nil {
                return Projectile{}, err
         }
 
@@ -36,20 +36,20 @@ func tick(w World, p Projectile) (Projectile, error) {
 }
 
 func main() {
-        pos := t.Tuple{X: 0, Y: 1, Z: 0, W: 1}
+        pos := m.Tuple{X: 0, Y: 1, Z: 0, W: 1}
 
-        norm, err := t.Normalize(t.Tuple{X: 1, Y: 1.8, Z: 0, W: 0}) 
+        norm, err := m.Normalize(m.Tuple{X: 1, Y: 1.8, Z: 0, W: 0}) 
 
         if err != nil {
                 log.Println(err)
         }
 
-        v := t.Multiply(norm, 11.25)
+        v := norm.MultiplyFloat(11.25)
         v.W = 0
 
         p := Projectile{position: pos, velocity: v}
-        grav := t.Tuple{X: 0, Y: -0.1, Z: 0, W: 0}
-        wind := t.Tuple{X: -0.01, Y: 0, Z: 0, W: 0}
+        grav := m.Tuple{X: 0, Y: -0.1, Z: 0, W: 0}
+        wind := m.Tuple{X: -0.01, Y: 0, Z: 0, W: 0}
         world := World{gravity: grav, wind: wind}
         canvas := c.CreateCanvas(900, 550)
         red := c.Color{R: 1.0, G: 0.0, B: 0.0}

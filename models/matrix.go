@@ -1,8 +1,7 @@
-package matrix
+package model 
 
 import (
 	"fmt"
-	t "github.com/noaoh/raytracer/models/tuple"
 	"math"
 )
 
@@ -47,7 +46,7 @@ func (m Matrix) Col(y int) []float64 {
 	return cols
 }
 
-func Multiply(a, b Matrix) (Matrix, error) {
+func (a *Matrix) MultiplyMatrix(b Matrix) (Matrix, error) {
 	if a.Cols != b.Rows {
 		return Matrix{}, fmt.Errorf("The number of columns in matrix a must be the same as the number of rows in matrix b for matrix multiplication: a = %+v, b = %+v", a, b)
 	}
@@ -66,7 +65,32 @@ func Multiply(a, b Matrix) (Matrix, error) {
 	return m, nil
 }
 
-func FromTuple(tup t.Tuple) Matrix {
+func (a *Matrix) MultiplyFloat(f float64) (Matrix) {
+        m := CreateMatrix(a.Rows, a.Cols)
+        for i := 0; i < a.Rows; i++ {
+                for j := 0; j < a.Cols; j++ {
+                        m.Data[i][j] = a.Data[i][j] * f
+                }
+        }
+
+        return m
+}
+
+func (a *Matrix) MultiplyTuple(b Tuple) (Tuple, error) {
+        m := FromTuple(b)
+
+        r, err := a.MultiplyMatrix(m); if err != nil {
+                return Tuple{}, err 
+        }
+
+        t, err := FromMatrix(r); if err != nil {
+                return Tuple{}, err
+        }
+
+        return t, nil
+}
+
+func FromTuple(tup Tuple) Matrix {
 	m := CreateMatrix(4, 1)
 	m.Data[0][0] = tup.X
 	m.Data[1][0] = tup.Y
@@ -155,7 +179,7 @@ func (m Matrix) Inverse() (Matrix, error) {
 	return Transpose(r), nil
 }
 
-func Equal(m, n Matrix) bool {
+func MatrixEqual(m, n Matrix) bool {
 	if m.Rows != n.Rows || m.Cols != n.Cols {
 		return false
 	}
