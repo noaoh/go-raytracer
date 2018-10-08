@@ -1,74 +1,54 @@
 package main 
 
 import (
-        "fmt"
         "math"
         "log"
         m "github.com/noaoh/raytracer/models"
         c "github.com/noaoh/raytracer/canvas"
 )
 
-type Projectile struct {
-        position m.Tuple
-        velocity m.Tuple
-}
-
-type World struct {
-        gravity m.Tuple
-        wind m.Tuple
-}
-
-func tick(w World, p Projectile) (Projectile, error) {
-
-        pos, err := m.Add(p.position, p.velocity); if err != nil {
-                return Projectile{}, err
-        }
-
-        world_vel, err := m.Add(w.gravity, w.wind); if err != nil {
-                return Projectile{}, err
-        }
-
-        vel, err := m.Add(p.velocity, world_vel); if err != nil {
-               return Projectile{}, err
-        }
-
-        return Projectile{position: pos, velocity: vel}, nil
-}
 
 func main() {
-        pos := m.Tuple{X: 0, Y: 1, Z: 0, W: 1}
-
-        norm, err := m.Normalize(m.Tuple{X: 1, Y: 1.8, Z: 0, W: 0}) 
-
-        if err != nil {
-                log.Println(err)
-        }
-
-        v := norm.MultiplyFloat(11.25)
-        v.W = 0
-
-        p := Projectile{position: pos, velocity: v}
-        grav := m.Tuple{X: 0, Y: -0.1, Z: 0, W: 0}
-        wind := m.Tuple{X: -0.01, Y: 0, Z: 0, W: 0}
-        world := World{gravity: grav, wind: wind}
-        canvas := c.CreateCanvas(900, 550)
-        red := c.Color{R: 1.0, G: 0.0, B: 0.0}
-        numTicks := 0
+        startPos := m.Tuple{X: 0.0, Y: 0.0, Z: 9.955, W: 1.0}
+        canvas := c.CreateCanvas(100, 100)
+        i := 0.0
+        red := c.Color {R: 1.0}
+        r := float64(canvas.Width) * .375
+        center := m.Tuple{X: 50, Y: 50, Z: 50, W: 0}
         for {
-                if p.position.Y <= 0 {
-                        break
-                }
-                fmt.Printf("%+v\n", p)
-                x := int(math.Round(math.Abs(p.position.X)))
-                y := int(math.Round(math.Abs(float64(canvas.Height) - p.position.Y)))
-                canvas.Write(x, y, red)
-        
-                p, err = tick(world, p); if err != nil {
-                        log.Println(err)
-                }
+             if i == 12.0 {
+                     break
+             }
+             log.Println(i)
 
-                numTicks += 1
+             t := m.YAxisRotationMatrix(i * (math.Pi/6.0))
+             log.Printf("Y Rotation Matrix: %+v\n", t)
+
+             clockPos, err := t.MultiplyTuple(startPos); if err != nil {
+                     log.Println(err)
+             }
+
+             clockPos.X *= r
+             clockPos.Z *= r
+
+             realClockPos, err:= m.Add(center, clockPos); if err != nil {
+                     log.Println(err)
+             }
+
+             x := int(realClockPos.X) % 100
+             z := int(realClockPos.Z) % 100
+
+             if x < 0 {
+                     x += 100
+             }
+
+             if z < 0 {
+                     z += 100
+             }
+
+             log.Printf("Position: (%d, %d)\n", x, z)
+             canvas.Write(x, z, red)
+             i += 1.0
         }
-        fmt.Printf("%d ticks to hit the ground\n", numTicks)
         canvas.WriteFile("test.ppm")
 }
