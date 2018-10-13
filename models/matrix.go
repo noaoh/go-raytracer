@@ -1,4 +1,4 @@
-package model 
+package model
 
 import (
 	"fmt"
@@ -37,8 +37,7 @@ func (m Matrix) Row(x int) []float64 {
 	return m.Data[x]
 }
 
-func (m Matrix) Col(y int) []float64 {
-	cols := make([]float64, y)
+func (m Matrix) Col(y int) []float64 { cols := make([]float64, y)
 	for i := 0; i < m.Cols; i++ {
 		cols[i] = m.Data[i][y]
 	}
@@ -46,7 +45,7 @@ func (m Matrix) Col(y int) []float64 {
 	return cols
 }
 
-func (a *Matrix) MultiplyMatrix(b Matrix) (Matrix, error) {
+func (a Matrix) MultiplyMatrix(b Matrix) (Matrix, error) {
 	if a.Cols != b.Rows {
 		return Matrix{}, fmt.Errorf("The number of columns in matrix a must be the same as the number of rows in matrix b for matrix multiplication: a = %+v, b = %+v", a, b)
 	}
@@ -65,29 +64,31 @@ func (a *Matrix) MultiplyMatrix(b Matrix) (Matrix, error) {
 	return m, nil
 }
 
-func (a *Matrix) MultiplyFloat(f float64) (Matrix) {
-        m := CreateMatrix(a.Rows, a.Cols)
-        for i := 0; i < a.Rows; i++ {
-                for j := 0; j < a.Cols; j++ {
-                        m.Data[i][j] = a.Data[i][j] * f
-                }
-        }
+func (a *Matrix) MultiplyFloat(f float64) Matrix {
+	m := CreateMatrix(a.Rows, a.Cols)
+	for i := 0; i < a.Rows; i++ {
+		for j := 0; j < a.Cols; j++ {
+			m.Data[i][j] = a.Data[i][j] * f
+		}
+	}
 
-        return m
+	return m
 }
 
 func (a *Matrix) MultiplyTuple(b Tuple) (Tuple, error) {
-        m := FromTuple(b)
+	m := FromTuple(b)
 
-        r, err := a.MultiplyMatrix(m); if err != nil {
-                return Tuple{}, err 
-        }
+	r, err := a.MultiplyMatrix(m)
+	if err != nil {
+		return Tuple{}, err
+	}
 
-        t, err := FromMatrix(r); if err != nil {
-                return Tuple{}, err
-        }
+	t, err := FromMatrix(r)
+	if err != nil {
+		return Tuple{}, err
+	}
 
-        return t, nil
+	return t, nil
 }
 
 func FromTuple(tup Tuple) Matrix {
@@ -141,7 +142,7 @@ func (m Matrix) Minor(row, col int) float64 {
 }
 
 func (m Matrix) Cofactor(row, col int) float64 {
-	return math.Pow(-1.0, float64(col + row)) * m.Minor(row, col)
+	return math.Pow(-1.0, float64(col+row)) * m.Minor(row, col)
 }
 
 func (m Matrix) Determinant() (float64, error) {
