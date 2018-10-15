@@ -1,4 +1,4 @@
-package model
+package raytracer 
 
 import (
 	"fmt"
@@ -23,7 +23,7 @@ func CreateRay(origin, direction Tuple) (Ray, error) {
 
 func (r *Ray) Position(t float64) (Tuple, error) {
 	slope := r.Direction.MultiplyFloat(t)
-	result, err := Add(slope, r.Origin)
+	result, err := slope.Add(r.Origin)
 	if err != nil {
 		return Tuple{}, err
 	}

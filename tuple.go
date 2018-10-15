@@ -1,4 +1,4 @@
-package model
+package raytracer 
 
 import (
 	"fmt"
@@ -28,7 +28,7 @@ func TupleEqual(a, b Tuple) bool {
 	return (x && y && z && w)
 }
 
-func Add(a, b Tuple) (Tuple, error) {
+func (a Tuple) Add(b Tuple) (Tuple, error) {
 	if a.IsPoint() && b.IsPoint() {
 		return Tuple{}, fmt.Errorf("Can not add a point to a point: a = %+v, b = %+v", a, b)
 	}
@@ -36,7 +36,7 @@ func Add(a, b Tuple) (Tuple, error) {
 	return Tuple{X: a.X + b.X, Y: a.Y + b.Y, Z: a.Z + b.Z, W: a.W + b.W}, nil
 }
 
-func Subtract(a, b Tuple) (Tuple, error) {
+func (a Tuple) Subtract(b Tuple) (Tuple, error) {
 	if a.IsVector() && b.IsPoint() {
 		return Tuple{}, fmt.Errorf("Can not subtract a point from a vector: a = %+v, b = %+v", a, b)
 	}
@@ -44,7 +44,7 @@ func Subtract(a, b Tuple) (Tuple, error) {
 	return Tuple{X: a.X - b.X, Y: a.Y - b.Y, Z: a.Z - b.Z, W: a.W - b.W}, nil
 }
 
-func Negate(a Tuple) Tuple {
+func (a Tuple) Negate() Tuple {
 	return Tuple{X: a.X * -1, Y: a.Y * -1, Z: a.Z * -1, W: a.W * -1}
 }
 
@@ -60,21 +60,21 @@ func FromMatrix(m Matrix) (Tuple, error) {
 	return Tuple{X: x, Y: y, Z: z, W: w}, nil
 }
 
-func (a *Tuple) MultiplyFloat(f float64) Tuple {
+func (a Tuple) MultiplyFloat(f float64) Tuple {
 	return Tuple{X: a.X * f, Y: a.Y * f, Z: a.Z * f, W: a.W * f}
 }
 
-func (a *Tuple) MultiplyTuple(b Tuple) Tuple {
+func (a Tuple) MultiplyTuple(b Tuple) Tuple {
 	return Tuple{X: a.X * b.X, Y: a.Y * b.Y, Z: a.Z * b.Z, W: a.W * b.W}
 }
 
-func Magnitude(a Tuple) float64 {
+func (a Tuple) Magnitude() float64 {
 	sum := math.Pow(a.X, 2) + math.Pow(a.Y, 2) + math.Pow(a.Z, 2) + math.Pow(a.W, 2)
 	return math.Sqrt(sum)
 }
 
-func Normalize(a Tuple) (Tuple, error) {
-	m := Magnitude(a)
+func (a Tuple) Normalize() (Tuple, error) {
+	m := a.Magnitude()
 	if m == 0 {
 		return Tuple{}, fmt.Errorf("Can not divide by zero: %+v", a)
 	}

@@ -1,4 +1,4 @@
-package canvas 
+package raytracer 
 
 type Color struct {
         R float64
@@ -6,15 +6,15 @@ type Color struct {
         B float64
 }
 
-func Add(x, y Color) Color {
+func (x Color) Add(y Color) Color {
         return Color {R: x.R + y.R, G: x.G + y.G, B: x.B + y.B}
 }
 
-func Subtract(x, y Color) Color {
+func (x Color) Subtract(y Color) Color {
         return Color {R: x.R - y.R, G: x.G - y.G, B: x.B - y.B}
 }
 
-func MultiplyScalar(x Color, f float64) Color {
+func (x Color) MultiplyScalar(f float64) Color {
         return Color {R: x.R * f, G: x.G * f, B: x.B * f}
 }
 

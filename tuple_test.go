@@ -1,4 +1,4 @@
-package model
+package raytracer 
 
 import (
 	"math"
@@ -43,18 +43,18 @@ func TestIsVector(t *testing.T) {
 	}
 }
 
-func TestAdd(t *testing.T) {
+func TestTupleAdd(t *testing.T) {
 	x := Tuple{X: 3.0, Y: -2.0, Z: 5.0, W: 1.0}
 	y := Tuple{X: -2.0, Y: 3.0, Z: 1.0, W: 0.0}
 	e := Tuple{X: 1.0, Y: 1.0, Z: 6.0, W: 1.0}
-	a, _ := Add(x, y)
+	a, _ := x.Add(y)
 	if a != e {
 		t.Logf("Add(%+v, %+v) != %+v\n", x, y, e)
 		t.Fail()
 	}
 }
 
-func TestSubtract(t *testing.T) {
+func TestTupleSubtract(t *testing.T) {
 	expected := []Tuple{
 		Tuple{X: -2.0, Y: -4.0, Z: -6.0, W: 0.0},
 		Tuple{X: -2.0, Y: -4.0, Z: -6.0, W: 1.0},
@@ -71,7 +71,10 @@ func TestSubtract(t *testing.T) {
 		t.Run(string(i), func(t *testing.T) {
 			x := actual[i][0]
 			y := actual[i][1]
-			s, _ := Subtract(x, y)
+			s, err := x.Subtract(y); if err != nil {
+                                t.Log(err)
+                                t.Fail()
+                        }
 			if s != e {
 				t.Logf("Subtract(%+v,%+v) != %+v\n", x, y, e)
 				t.Fail()
@@ -83,7 +86,7 @@ func TestSubtract(t *testing.T) {
 func TestNegate(t *testing.T) {
 	e := Tuple{X: -1, Y: 2, Z: -3, W: 4}
 	a := Tuple{X: 1, Y: -2, Z: 3, W: -4}
-	if Negate(a) != e {
+	if a.Negate() != e {
 		t.Logf("Negate(%+v) != %+v", a, e)
 	}
 }
@@ -118,7 +121,7 @@ func TestMagnitude(t *testing.T) {
 
 	for i, x := range e {
 		t.Run(string(i), func(t *testing.T) {
-			if Magnitude(a[i]) != x {
+			if a[i].Magnitude() != x {
 				t.Logf("Magnitude(%+v) != %f\n", a[i], x)
 				t.Fail()
 			}
@@ -129,7 +132,7 @@ func TestMagnitude(t *testing.T) {
 func TestNormalize(t *testing.T) {
 	a := Tuple{X: 1, Y: 2, Z: 3, W: 0}
 	e := Tuple{X: 1 / math.Sqrt(14), Y: 2 / math.Sqrt(14), Z: 3 / math.Sqrt(14), W: 0}
-	n, _ := Normalize(a)
+	n, _ := a.Normalize()
 	if n != e {
 		t.Logf("Normalize(%+v) != %+v", a, e)
 		t.Fail()

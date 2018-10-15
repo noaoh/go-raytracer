@@ -1,4 +1,4 @@
-package model
+package raytracer 
 
 import (
 	"math"
