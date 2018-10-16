@@ -1,4 +1,4 @@
-package raytracer 
+package raytracer
 
 import (
 	"fmt"
@@ -37,7 +37,8 @@ func (m Matrix) Row(x int) []float64 {
 	return m.Data[x]
 }
 
-func (m Matrix) Col(y int) []float64 { cols := make([]float64, y)
+func (m Matrix) Col(y int) []float64 {
+	cols := make([]float64, y)
 	for i := 0; i < m.Cols; i++ {
 		cols[i] = m.Data[i][y]
 	}
@@ -75,7 +76,7 @@ func (a *Matrix) MultiplyFloat(f float64) Matrix {
 	return m
 }
 
-func (a *Matrix) MultiplyTuple(b Tuple) (Tuple, error) {
+func (a Matrix) MultiplyTuple(b Tuple) (Tuple, error) {
 	m := FromTuple(b)
 
 	r, err := a.MultiplyMatrix(m)
@@ -100,7 +101,7 @@ func FromTuple(tup Tuple) Matrix {
 	return m
 }
 
-func Transpose(m Matrix) Matrix {
+func (m Matrix) Transpose() Matrix {
 	r := CreateMatrix(m.Cols, m.Rows)
 
 	for y, s := range m.Data {
@@ -177,7 +178,7 @@ func (m Matrix) Inverse() (Matrix, error) {
 		}
 	}
 
-	return Transpose(r), nil
+	return r.Transpose(), nil
 }
 
 func MatrixEqual(m, n Matrix) bool {

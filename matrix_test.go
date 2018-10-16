@@ -1,4 +1,4 @@
-package raytracer 
+package raytracer
 
 import (
 	"math"
@@ -393,7 +393,7 @@ func TestTranspose(t *testing.T) {
 
 	for i, x := range e {
 		t.Run(string(i), func(t *testing.T) {
-			tr := Transpose(a[i])
+			tr := a[i].Transpose()
 			if !MatrixEqual(tr, x) {
 				t.Logf("%+v != %+v", tr, x)
 				t.Fail()

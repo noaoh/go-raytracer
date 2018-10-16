@@ -11,19 +11,23 @@ import (
 func main() {
         wallZ := 10.0
         wallSize := 7.0
-        canvasPixels := 100.0
+        canvasPixels := 200.0
         pixelSize := wallSize / canvasPixels
         half := wallSize / 2.0
         rayOrigin := r.Tuple{X: 0.0, Y: 0.0, Z: -5.0, W: 1.0}
         canvas := r.CreateCanvas(int(canvasPixels), int(canvasPixels))
-        red := r.Color {R: 1.0}
         noHit := r.Intersection{T: math.MaxFloat64, Obj: r.Sphere {}}
-        sphereTransform, _ := r.ShearingMatrix(1, 0, 0, 1, 0, 0).MultiplyMatrix(r.ScalingMatrix(0.5, 1, 1))
-        sphere := r.Sphere{
+        sphereTransform := r.ZAxisRotationMatrix(.5)
+        sphere := r.Sphere {
                 Radius: 1.0,
                 Origin: r.Tuple{X: 0.0, Y: 0.0, Z: 0.0, W: 1.0},
                 Transform: sphereTransform,
+                Material: r.DefaultMaterial(),
         }
+        sphere.Material.Color = r.Color{R: 1.0, G: 0.0, B: 0.0}
+        lightPos := r.Tuple{X: -10.0, Y: 10.0, Z: -10.0, W: 1.0}
+        lightColor := r.Color{R: 1.0, G: 1.0, B: 1.0}
+        light := r.Light{Intensity: lightColor, Position: lightPos}
 
         for y := 0; y < canvas.Height; y++ {
                 worldY := half - pixelSize * float64(y)
@@ -48,6 +52,12 @@ func main() {
                                 os.Exit(1)
                         }
 
+                        ray.Direction, err = ray.Direction.Normalize()
+                        if err != nil {
+                                log.Print(err)
+                                os.Exit(1)
+                        }
+
                         xs, err := r.Intersect(sphere, ray); if err != nil {
                                 log.Print(err)
                                 os.Exit(1)
@@ -55,7 +65,27 @@ func main() {
 
                         hit := r.Hit(xs)
                         if !r.IntersectionEqual(hit, noHit) {
-                                canvas.Write(x, y, red)
+                                point, err := ray.Position(hit.T); if err != nil {
+                                        log.Print(err)
+                                        os.Exit(1)
+                                }
+
+                                normal, err := hit.Obj.NormalAt(point); if err != nil {
+                                        log.Print(err)
+                                        os.Exit(1)
+                                }
+                                eye := ray.Direction
+                                color, err := r.Lighting(hit.Obj.Material, light, point, eye, normal)
+                                if err != nil {
+                                        log.Print(err)
+                                        os.Exit(1)
+                                }
+
+                                if y >= 61 && y <= 76 && x >= 60 && x <= 75 {
+                                        log.Printf("(%d, %d): %+v\n", x, y, color)
+                                }
+
+                                canvas.Write(x, y, color)
                         }
                 }
         }

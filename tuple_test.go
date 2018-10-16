@@ -1,4 +1,4 @@
-package raytracer 
+package raytracer
 
 import (
 	"math"
@@ -71,10 +71,11 @@ func TestTupleSubtract(t *testing.T) {
 		t.Run(string(i), func(t *testing.T) {
 			x := actual[i][0]
 			y := actual[i][1]
-			s, err := x.Subtract(y); if err != nil {
-                                t.Log(err)
-                                t.Fail()
-                        }
+			s, err := x.Subtract(y)
+			if err != nil {
+				t.Log(err)
+				t.Fail()
+			}
 			if s != e {
 				t.Logf("Subtract(%+v,%+v) != %+v\n", x, y, e)
 				t.Fail()
@@ -134,7 +135,7 @@ func TestNormalize(t *testing.T) {
 	e := Tuple{X: 1 / math.Sqrt(14), Y: 2 / math.Sqrt(14), Z: 3 / math.Sqrt(14), W: 0}
 	n, _ := a.Normalize()
 	if n != e {
-		t.Logf("Normalize(%+v) != %+v", a, e)
+		t.Logf("Normalize(%+v) != %+v\n", a, e)
 		t.Fail()
 	}
 }
@@ -145,7 +146,39 @@ func TestDot(t *testing.T) {
 	y := Tuple{X: 2.0, Y: 3.0, Z: 4.0, W: 0.0}
 	d, _ := Dot(x, y)
 	if d != e {
-		t.Logf("Dot(%+v, %+v) != %f", x, y, e)
+		t.Logf("Dot(%+v, %+v) != %f\n", x, y, e)
 		t.Fail()
+	}
+}
+
+func TestReflect(t *testing.T) {
+	vs := []Tuple{
+		Tuple{1, -1, 0, 0},
+		Tuple{0, -1, 0, 0},
+	}
+
+	ns := []Tuple{
+		Tuple{0, 1, 0, 0},
+		Tuple{math.Sqrt(2) / 2, math.Sqrt(2) / 2, 0, 0},
+	}
+
+	e := []Tuple{
+		Tuple{1, 1, 0, 0},
+		Tuple{1, 0, 0, 0},
+	}
+
+	for i, x := range e {
+		t.Run(string(i), func(t *testing.T) {
+			r, err := Reflect(vs[i], ns[i])
+			if err != nil {
+				t.Log(err)
+				t.Fail()
+			}
+
+			if !TupleEqual(r, x) {
+				t.Logf("%+v != %+v\n", r, x)
+				t.Fail()
+			}
+		})
 	}
 }

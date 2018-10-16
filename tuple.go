@@ -1,4 +1,4 @@
-package raytracer 
+package raytracer
 
 import (
 	"fmt"
@@ -98,4 +98,22 @@ func Cross(t1, t2 Tuple) (Tuple, error) {
 	zx := t1.Z*t2.X - t1.X*t1.Z
 	xy := t1.X*t2.Y - t1.Y*t2.X
 	return Tuple{X: zy, Y: zx, Z: xy, W: t1.W}, nil
+}
+
+func Reflect(in, norm Tuple) (Tuple, error) {
+	if in.IsPoint() || norm.IsPoint() {
+		return Tuple{}, fmt.Errorf("can not reflect points: in: %+v, norm: %+v", in, norm)
+	}
+
+	d, err := Dot(in, norm)
+	if err != nil {
+		return Tuple{}, err
+	}
+
+	r, err := in.Subtract(norm.MultiplyFloat(2 * d))
+	if err != nil {
+		return Tuple{}, err
+	}
+
+	return r, nil
 }

@@ -1,4 +1,4 @@
-package raytracer 
+package raytracer
 
 import (
 	"fmt"
@@ -31,21 +31,24 @@ func (r *Ray) Position(t float64) (Tuple, error) {
 }
 
 func Transform(r Ray, m Matrix) (Ray, error) {
-        o, err := m.MultiplyTuple(r.Origin); if err != nil {
-               return Ray{}, err 
-        }
+	o, err := m.MultiplyTuple(r.Origin)
+	if err != nil {
+		return Ray{}, err
+	}
 
-        d, err := m.MultiplyTuple(r.Direction); if err != nil {
-               return Ray{}, err 
-        }
+	d, err := m.MultiplyTuple(r.Direction)
+	if err != nil {
+		return Ray{}, err
+	}
 
-        c, err := CreateRay(o, d); if err != nil {
-               return Ray{}, err 
-        }
+	c, err := CreateRay(o, d)
+	if err != nil {
+		return Ray{}, err
+	}
 
-        return c, nil
+	return c, nil
 }
 
 func RayEqual(r1, r2 Ray) bool {
-        return TupleEqual(r1.Origin, r2.Origin) && TupleEqual(r1.Direction, r2.Direction)
+	return TupleEqual(r1.Origin, r2.Origin) && TupleEqual(r1.Direction, r2.Direction)
 }
