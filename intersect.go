@@ -2,18 +2,28 @@ package raytracer
 
 import (
 	"math"
+        "sort"
 )
 
 type Intersection struct {
 	T   float64
 	Obj Sphere
+        Point Tuple
+        EyeV Tuple
+        NormalV Tuple
+        Inside bool
 }
 
-func IsPositive(f float64) bool {
-	return math.Abs(f) == f
+func IntersectionEqual(i1, i2 Intersection) bool {
+	return i1.Inside == i2.Inside &&
+        FloatEqual(i1.T, i2.T) && 
+        TupleEqual(i1.Point, i2.Point) &&
+        TupleEqual(i1.EyeV, i2.EyeV) &&
+        TupleEqual(i1.NormalV, i2.NormalV) &&
+        SphereEqual(i1.Obj, i2.Obj)
 }
 
-func Intersect(s Sphere, r Ray) ([]Intersection, error) {
+func (s Sphere) Intersect(r Ray) ([]Intersection, error) {
 
 	errValue := []Intersection{
 		Intersection{T: math.MaxFloat64, Obj: Sphere{}},
@@ -66,32 +76,24 @@ func Intersect(s Sphere, r Ray) ([]Intersection, error) {
 	return []Intersection{{T: t1, Obj: s}, {T: t2, Obj: s}}, nil
 }
 
-func IntersectionEqual(i1, i2 Intersection) bool {
-	return (i1.T == i2.T) && (SphereEqual(i1.Obj, i2.Obj))
-}
-
-func Hit(is []Intersection) Intersection {
-	// Hit is always the lowest non-negative intersection
-	low := Intersection{T: math.MaxFloat64, Obj: Sphere{}}
-	for _, x := range is {
-		// Ignore negative intersections
-		if !IsPositive(x.T) {
-			continue
-		}
-
-		if x.T < low.T {
-			low = x
-		}
+func (w World) Intersect(r Ray) ([]Intersection, error) {
+	errValue := []Intersection{
+		Intersection{T: math.MaxFloat64, Obj: Sphere{}},
 	}
-	return low
-}
 
-func Clamp(num, min, max float64) float64 {
-	if num < min {
-		return min
-	} else if num > max {
-		return max
-	} else {
-		return num
-	}
+        worldIs := make([]Intersection, 0)
+        for _, s := range w.Shapes {
+                shapeIs, err := s.Intersect(r); if err != nil {
+                        return errValue, err
+                }
+
+                for _, i := range shapeIs {
+                        worldIs = append(worldIs, i)
+                }
+        }
+
+        sort.Slice(worldIs, func(i, j int) bool { 
+                return worldIs[i].T < worldIs[j].T
+        })
+        return  worldIs, nil
 }

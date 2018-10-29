@@ -11,20 +11,15 @@ import (
 func main() {
         wallZ := 10.0
         wallSize := 7.0
-        canvasPixels := 200.0
+        canvasPixels := 500.0
         pixelSize := wallSize / canvasPixels
         half := wallSize / 2.0
         rayOrigin := r.Tuple{X: 0.0, Y: 0.0, Z: -5.0, W: 1.0}
         canvas := r.CreateCanvas(int(canvasPixels), int(canvasPixels))
         noHit := r.Intersection{T: math.MaxFloat64, Obj: r.Sphere {}}
-        sphereTransform := r.ZAxisRotationMatrix(.5)
-        sphere := r.Sphere {
-                Radius: 1.0,
-                Origin: r.Tuple{X: 0.0, Y: 0.0, Z: 0.0, W: 1.0},
-                Transform: sphereTransform,
-                Material: r.DefaultMaterial(),
-        }
-        sphere.Material.Color = r.Color{R: 1.0, G: 0.0, B: 0.0}
+        sphere := r.DefaultSphere()
+        sphere.Transform = r.IdentityMatrix(4)
+        sphere.Material.Color = r.Color{R: 1.0, G: 0.2, B: 1.0}
         lightPos := r.Tuple{X: -10.0, Y: 10.0, Z: -10.0, W: 1.0}
         lightColor := r.Color{R: 1.0, G: 1.0, B: 1.0}
         light := r.Light{Intensity: lightColor, Position: lightPos}
@@ -58,7 +53,7 @@ func main() {
                                 os.Exit(1)
                         }
 
-                        xs, err := r.Intersect(sphere, ray); if err != nil {
+                        xs, err := sphere.Intersect(ray); if err != nil {
                                 log.Print(err)
                                 os.Exit(1)
                         }
@@ -79,10 +74,6 @@ func main() {
                                 if err != nil {
                                         log.Print(err)
                                         os.Exit(1)
-                                }
-
-                                if y >= 61 && y <= 76 && x >= 60 && x <= 75 {
-                                        log.Printf("(%d, %d): %+v\n", x, y, color)
                                 }
 
                                 canvas.Write(x, y, color)

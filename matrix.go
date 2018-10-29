@@ -11,10 +11,6 @@ type Matrix struct {
 	Data [][]float64
 }
 
-func FloatEqual(a, b float64) bool {
-	epsilon := .00001
-	return (math.Abs(a-b) < epsilon)
-}
 
 func CreateMatrix(r, c int) Matrix {
 	m := Matrix{Rows: r, Cols: c}
@@ -259,4 +255,44 @@ func ShearingMatrix(xy, xz, yx, yz, zx, zy float64) Matrix {
 	m.Data[2][0] = zx
 	m.Data[2][1] = zy
 	return m
+}
+
+func ViewTransform(from, to, up Tuple) (Matrix, error) {
+        sub, err := to.Subtract(from); if err != nil {
+                return Matrix{}, err
+        }
+
+        forward, err := sub.Normalize(); if err != nil {
+                return Matrix{}, err
+        }
+
+        upn, err := up.Normalize(); if err != nil {
+                return Matrix{}, err
+        }
+
+        left, err := Cross(forward, upn); if err != nil {
+                return Matrix{}, err
+        }
+
+        trueUp, err := Cross(left, forward); if err != nil {
+                return Matrix{}, err
+        }
+
+        orientation := IdentityMatrix(4)
+        orientation.Data[0][0] = left.X
+        orientation.Data[0][1] = left.Y
+        orientation.Data[0][2] = left.Z
+        orientation.Data[1][0] = trueUp.X
+        orientation.Data[1][1] = trueUp.Y
+        orientation.Data[1][2] = trueUp.Z
+        orientation.Data[2][0] = -forward.X
+        orientation.Data[2][1] = -forward.Y
+        orientation.Data[2][2] = -forward.Z
+
+        final, err := orientation.MultiplyMatrix(TranslationMatrix(-from.X, -from.Y, -from.Z))
+        if err != nil {
+                return Matrix{}, err
+        }
+
+        return final, nil
 }

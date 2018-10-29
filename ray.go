@@ -21,7 +21,7 @@ func CreateRay(origin, direction Tuple) (Ray, error) {
 	return Ray{Origin: origin, Direction: direction}, nil
 }
 
-func (r *Ray) Position(t float64) (Tuple, error) {
+func (r Ray) Position(t float64) (Tuple, error) {
 	slope := r.Direction.MultiplyFloat(t)
 	result, err := slope.Add(r.Origin)
 	if err != nil {

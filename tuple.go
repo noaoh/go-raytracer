@@ -60,20 +60,20 @@ func FromMatrix(m Matrix) (Tuple, error) {
 	return Tuple{X: x, Y: y, Z: z, W: w}, nil
 }
 
-func (a Tuple) MultiplyFloat(f float64) Tuple {
-	return Tuple{X: a.X * f, Y: a.Y * f, Z: a.Z * f, W: a.W * f}
-}
+        func (a Tuple) MultiplyFloat(f float64) Tuple {
+                return Tuple{X: a.X * f, Y: a.Y * f, Z: a.Z * f, W: a.W * f}
+        }
 
-func (a Tuple) MultiplyTuple(b Tuple) Tuple {
-	return Tuple{X: a.X * b.X, Y: a.Y * b.Y, Z: a.Z * b.Z, W: a.W * b.W}
-}
+        func (a Tuple) MultiplyTuple(b Tuple) Tuple {
+                return Tuple{X: a.X * b.X, Y: a.Y * b.Y, Z: a.Z * b.Z, W: a.W * b.W}
+        }
 
-func (a Tuple) Magnitude() float64 {
-	sum := math.Pow(a.X, 2) + math.Pow(a.Y, 2) + math.Pow(a.Z, 2) + math.Pow(a.W, 2)
-	return math.Sqrt(sum)
-}
+        func (a Tuple) Magnitude() float64 {
+                sum := math.Pow(a.X, 2) + math.Pow(a.Y, 2) + math.Pow(a.Z, 2) + math.Pow(a.W, 2)
+                return math.Sqrt(sum)
+        }
 
-func (a Tuple) Normalize() (Tuple, error) {
+        func (a Tuple) Normalize() (Tuple, error) {
 	m := a.Magnitude()
 	if m == 0 {
 		return Tuple{}, fmt.Errorf("Can not divide by zero: %+v", a)
@@ -89,15 +89,15 @@ func Dot(t1, t2 Tuple) (float64, error) {
 	return (t1.X * t2.X) + (t1.Y * t2.Y) + (t1.Z * t2.Z) + (t1.W * t2.W), nil
 }
 
-func Cross(t1, t2 Tuple) (Tuple, error) {
-	if t1.IsPoint() || t2.IsPoint() {
-		return Tuple{}, fmt.Errorf("can not perform cross product on points: t1: %+v, t2: %+v", t1, t2)
+func Cross(t, b Tuple) (Tuple, error) {
+	if t.IsPoint() || b.IsPoint() {
+		return Tuple{}, fmt.Errorf("can not perform cross product on points: t: %+v, b: %+v", t, b)
 	}
 
-	zy := t1.Y*t2.Z - t2.Z*t1.Y
-	zx := t1.Z*t2.X - t1.X*t1.Z
-	xy := t1.X*t2.Y - t1.Y*t2.X
-	return Tuple{X: zy, Y: zx, Z: xy, W: t1.W}, nil
+	zy := t.Y * b.Z - t.Z * b.Y
+	zx := t.Z * b.X - t.X * b.Z
+	xy := t.X * b.Y - t.Y * b.X
+	return Tuple{X: zy, Y: zx, Z: xy, W: 0.0}, nil
 }
 
 func Reflect(in, norm Tuple) (Tuple, error) {

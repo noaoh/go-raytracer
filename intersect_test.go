@@ -150,7 +150,7 @@ func TestIntersect(t *testing.T) {
 
 	for idx, iexp := range e {
 		t.Run(string(idx), func(t *testing.T) {
-			iact, err := Intersect(ss[idx], rs[idx])
+			iact, err := ss[idx].Intersect(rs[idx])
 			if err != nil {
 				t.Fail()
 				t.Log(err)
@@ -163,86 +163,5 @@ func TestIntersect(t *testing.T) {
 				}
 			}
 		})
-	}
-}
-
-func TestHit(t *testing.T) {
-	s := Sphere{Radius: 1.0, Origin: Tuple{X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}}
-
-	is := [][]Intersection{
-		{
-			Intersection{
-				T:   1.0,
-				Obj: s,
-			},
-			Intersection{
-				T:   2.0,
-				Obj: s,
-			},
-		},
-		{
-			Intersection{
-				T:   -1.0,
-				Obj: s,
-			},
-			Intersection{
-				T:   1.0,
-				Obj: s,
-			},
-		},
-		{
-			Intersection{
-				T:   -2.0,
-				Obj: s,
-			},
-			Intersection{
-				T:   -1.0,
-				Obj: s,
-			},
-		},
-		{
-			Intersection{
-				T:   5.0,
-				Obj: s,
-			},
-			Intersection{
-				T:   7.0,
-				Obj: s,
-			},
-			Intersection{
-				T:   -3.0,
-				Obj: s,
-			},
-			Intersection{
-				T:   2.0,
-				Obj: s,
-			},
-		},
-	}
-
-	e := []Intersection{
-		Intersection{
-			T:   1.0,
-			Obj: s,
-		},
-		Intersection{
-			T:   1.0,
-			Obj: s,
-		},
-		Intersection{
-			T:   math.MaxFloat64,
-			Obj: Sphere{},
-		},
-		Intersection{
-			T:   2.0,
-			Obj: s,
-		},
-	}
-
-	for i, x := range e {
-		if !IntersectionEqual(Hit(is[i]), x) {
-			t.Fail()
-			t.Logf("%+v != %+v", is[i], x)
-		}
 	}
 }
