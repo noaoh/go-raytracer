@@ -62,17 +62,24 @@ func (world World) ShadeHit(hit Intersection) (Color, error) {
         return c, nil
 }
 
-func (world World) ColorAt(ray Ray) (Color, error) {
+func AllMisses(intersects []Intersection) (bool) {
         miss := Intersection{T: math.MaxFloat64, Obj: Sphere{}}
+        for _, x := range intersects {
+                if !IntersectionEqual(x, miss) {
+                        return false
+                }
+        }
 
+        return true
+
+}
+func (world World) ColorAt(ray Ray) (Color, error) {
         var c Color
         intersections, err := world.Intersect(ray); if err != nil {
                 return c, err
         }
  
-        if len(intersections) == 4 && 
-        IntersectionEqual(intersections[0], miss) && 
-        IntersectionEqual(intersections[1], miss) {
+        if AllMisses(intersections) {
                 return Color{0, 0, 0}, nil
         }
 
