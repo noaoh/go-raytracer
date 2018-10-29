@@ -35,8 +35,15 @@ func main() {
         right.Material.Diffuse = .7
         right.Material.Specular = .3
          
+        left := r.DefaultSphere()
+        left.Transform, _ = r.TranslationMatrix(-1.5, .33, -.75).MultiplyMatrix(r.ScalingMatrix(.33, .33, .33))
+        left.Material = r.DefaultMaterial()
+        left.Material.Color = r.Color{R: 1, G: .8, B: .1}
+        left.Material.Diffuse = .7
+        left.Material.Specular = .3
+
         world := r.DefaultWorld()
-        world.Shapes = []r.Sphere {floor, leftWall, middle, right}
+        world.Shapes = []r.Sphere {floor, leftWall, middle, right, left}
 
         camera := r.CreateCamera(1000.0, 500.0, math.Pi/3)
         var err error
