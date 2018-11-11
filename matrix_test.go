@@ -663,44 +663,43 @@ func TestShearingMatrix(t *testing.T) {
 }
 
 func TestViewTransform(t *testing.T) {
-        froms := []Tuple {
-                Tuple {X: 0, Y: 0, Z: 0, W: 1},
-                Tuple {X: 0, Y: 0, Z: 0, W: 1},
-                Tuple {X: 0, Y: 0, Z: 8, W: 1},
-                Tuple {X: 1, Y: 3, Z: 2, W: 1},
-        }
+	froms := []Tuple{
+		Tuple{X: 0, Y: 0, Z: 0, W: 1},
+		Tuple{X: 0, Y: 0, Z: 0, W: 1},
+		Tuple{X: 0, Y: 0, Z: 8, W: 1},
+		Tuple{X: 1, Y: 3, Z: 2, W: 1},
+	}
 
-        tos := []Tuple {
-                Tuple {X: 0, Y: 0, Z: -1, W: 1},
-                Tuple {X: 0, Y: 0, Z: 1, W: 1},
-                Tuple {X: 0, Y: 0, Z: 0, W: 1},
+	tos := []Tuple{
+		Tuple{X: 0, Y: 0, Z: -1, W: 1},
+		Tuple{X: 0, Y: 0, Z: 1, W: 1},
+		Tuple{X: 0, Y: 0, Z: 0, W: 1},
+	}
 
-        }
+	ups := []Tuple{
+		Tuple{X: 0, Y: 1, Z: 0, W: 0},
+		Tuple{X: 0, Y: 1, Z: 0, W: 0},
+		Tuple{X: 0, Y: 1, Z: 0, W: 0},
+	}
 
-        ups := []Tuple {
-                Tuple {X: 0, Y: 1, Z: 0, W: 0},
-                Tuple {X: 0, Y: 1, Z: 0, W: 0},
-                Tuple {X: 0, Y: 1, Z: 0, W: 0},
-        }
+	expected := []Matrix{
+		IdentityMatrix(4),
+		ScalingMatrix(-1, 1, -1),
+		TranslationMatrix(0, 0, -8),
+	}
 
-        expected := []Matrix {
-                IdentityMatrix(4),
-                ScalingMatrix(-1, 1, -1),
-                TranslationMatrix(0, 0, -8),
-        }
+	for i, x := range expected {
+		t.Run(string(i), func(t *testing.T) {
+			v, err := ViewTransform(froms[i], tos[i], ups[i])
+			if err != nil {
+				t.Log(err)
+				t.Fail()
+			}
 
-        for i, x := range expected {
-                t.Run(string(i), func(t *testing.T) {
-                        v, err := ViewTransform(froms[i], tos[i], ups[i])
-                        if err != nil {
-                                t.Log(err)
-                                t.Fail()
-                        }
-
-                        if !MatrixEqual(v, x) {
-                                t.Logf("%+v != %+v", v, x)
-                                t.Fail()
-                        }
-                })
-        }
+			if !MatrixEqual(v, x) {
+				t.Logf("%+v != %+v", v, x)
+				t.Fail()
+			}
+		})
+	}
 }

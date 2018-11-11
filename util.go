@@ -1,12 +1,12 @@
 package raytracer
 
 import (
-        "math"
+	"math"
 )
 
 func FloatEqual(a, b float64) bool {
 	epsilon := .00001
-	return (math.Abs(a - b) < epsilon)
+	return (math.Abs(a-b) < epsilon)
 }
 
 func IsPositive(f float64) bool {

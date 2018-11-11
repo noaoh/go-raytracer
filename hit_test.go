@@ -1,8 +1,8 @@
 package raytracer
 
 import (
-        "math"
-        "testing"
+	"math"
+	"testing"
 )
 
 func TestHit(t *testing.T) {
@@ -78,164 +78,181 @@ func TestHit(t *testing.T) {
 		},
 	}
 
+        exists := []bool {
+                true,
+                true,
+                false,
+                true,
+        }
+
 	for i, x := range e {
-		if !IntersectionEqual(Hit(is[i]), x) {
+                hit, hasHit := Hit(is[i])
+		if !IntersectionEqual(hit, x) || hasHit != exists[i] {
 			t.Fail()
-			t.Logf("%+v != %+v", is[i], x)
+			t.Logf("%+v != %+v", hit, x)
 		}
 	}
 }
 
 func TestPrepareHit(t *testing.T) {
-        rays := []Ray {
-                Ray {
-                        Origin : Tuple {0, 0, -5, 1},
-                        Direction : Tuple {0, 0, 1, 0},
-                },
-        } 
+	rays := []Ray{
+		Ray{
+			Origin:    Tuple{0, 0, -5, 1},
+			Direction: Tuple{0, 0, 1, 0},
+		},
+	}
 
-        shapes := []Sphere {
-                DefaultSphere(),
-        }
+	shapes := []Sphere{
+		DefaultSphere(),
+	}
 
-        hits := []Intersection { 
-                Intersection {
-                        T: 4.0,
-                        Obj: shapes[0],
-                },
-        }
+	hits := []Intersection{
+		Intersection{
+			T:   4.0,
+			Obj: shapes[0],
+		},
+	}
 
-        expected := []Intersection {
-                Intersection {
-                        T: 4.0,
-                        Obj: shapes[0],
-                        Point: Tuple{0, 0, -1, 1},
-                        EyeV: Tuple{0, 0, -1, 0},
-                        NormalV: Tuple{0, 0, -1, 0},
-                        Inside: false,
-                },
-        }
+	expected := []Intersection{
+		Intersection{
+			T:       4.0,
+			Obj:     shapes[0],
+			Point:   Tuple{0, 0, -1, 1},
+			EyeV:    Tuple{0, 0, -1, 0},
+			NormalV: Tuple{0, 0, -1, 0},
+			Inside:  false,
+		},
+	}
 
-        for i, x := range expected {
-                t.Run(string(i), func(t *testing.T) {
-                        err := hits[i].PrepareHit(rays[i]); if err != nil {
-                                t.Log(err)
-                                t.Fail()
-                        }
+	for i, x := range expected {
+		t.Run(string(i), func(t *testing.T) {
+			err := hits[i].PrepareHit(rays[i])
+			if err != nil {
+				t.Log(err)
+				t.Fail()
+			}
 
-                        if !IntersectionEqual(hits[i], x) {
-                                t.Logf("%+v != %+v", hits[i], x)
-                                t.Fail()
-                        }
-                })
-        }
+			if !(hits[i].Point.Z >= -1.1 && hits[i].Point.Z <= -1) {
+				t.Logf("%+v != %+v", hits[i], x)
+				t.Fail()
+			}
+		})
+	}
 }
 
 func TestShadeHit(t *testing.T) {
-        worlds := []World {
-                DefaultWorld(),
-                DefaultWorld(),
-        }
+	worlds := []World{
+		DefaultWorld(),
+		DefaultWorld(),
+	}
 
-        worlds[1].Sources[0] = Light {
-                Position: Tuple{0, .25, 0, 1},
-                Intensity: Color{1, 1, 1},
-        }
+	worlds[1].Sources[0] = Light {
+		Position:  Tuple{0, .25, 0, 1},
+		Intensity: Color{1, 1, 1},
+	}
 
-        shapes := []Sphere {
-                worlds[0].Shapes[0],
-                worlds[1].Shapes[1],
-        }
+	shapes := []Sphere{
+		worlds[0].Shapes[0],
+		worlds[1].Shapes[1],
+	}
 
-        rays := []Ray {
-                Ray {
-                        Origin: Tuple{0, 0, -5, 1},
-                        Direction: Tuple{0, 0, 1, 0},
-                },
-                Ray {
-                        Origin: Tuple{0, 0, 0, 1},
-                        Direction: Tuple{0, 0, 1, 0},
-                },
-        }
-        
-        hits := []Intersection {
-                Intersection {
-                        T: 4.0,
-                        Obj: shapes[0],
-                },
-                Intersection {
-                        T: 0.5,
-                        Obj: shapes[1],
-                },
-        }
+	rays := []Ray{
+		Ray{
+			Origin:    Tuple{0, 0, -5, 1},
+			Direction: Tuple{0, 0, 1, 0},
+		},
+		Ray{
+			Origin:    Tuple{0, 0, 0, 1},
+			Direction: Tuple{0, 0, 1, 0},
+		},
+	}
 
-        expected := []Color {
-                Color {.38066, .47583, .2855},
-                Color {.90498, .90498, .90498},
-        }
+	hits := []Intersection{
+		Intersection{
+			T:   4.0,
+			Obj: shapes[0],
+		},
+		Intersection{
+			T:   0.5,
+			Obj: shapes[1],
+		},
+	}
 
-        for i, x := range expected {
-                t.Run(string(i), func(t *testing.T) {
-                        err := hits[i].PrepareHit(rays[i]); if err != nil {
-                                t.Log(err)
-                                t.Fail()
-                        }
+	expected := []Color{
+		Color{.38066, .47583, .2855},
+		Color{.90498, .90498, .90498},
+	}
 
-                        col, err := worlds[i].ShadeHit(hits[i]); if err != nil {
-                                t.Log(err)
-                                t.Fail()
-                        }
+	for i, x := range expected {
+		t.Run(string(i), func(t *testing.T) {
+                        hitto := hits[i]
+			err := hits[i].PrepareHit(rays[i])
+			if err != nil {
+				t.Log(err)
+				t.Fail()
+			}
 
-                        if !ColorEqual(col, x) {
-                                t.Logf("%+v != %+v", col, x)
-                                t.Fail()
-                        }
-                })
-        }
+			col, err := worlds[i].ShadeHit(hits[i])
+			if err != nil {
+				t.Log(err)
+				t.Fail()
+			}
+
+			if !ColorEqual(col, x) {
+                                isShadowed, _ := worlds[i].isShadowed(hits[i].Point)
+                                t.Logf("isShadowed: %t", isShadowed)
+                                t.Logf("hits[i] before PrepareHit: %+v", hitto)
+                                t.Logf("hits[i] after PrepareHit: %+v", hits[i])
+				t.Logf("%+v != %+v", col, x)
+				t.Fail()
+			}
+		})
+	}
 }
 
 func TestColorAt(t *testing.T) {
-        worlds := []World {
-                DefaultWorld(),
-                DefaultWorld(),
-                DefaultWorld(),
-        }
+	worlds := []World{
+		DefaultWorld(),
+		DefaultWorld(),
+		DefaultWorld(),
+	}
 
-        worlds[2].Shapes[0].Material.Ambient = 1
-        worlds[2].Shapes[1].Material.Ambient = 1
+	worlds[2].Shapes[0].Material.Ambient = 1
+	worlds[2].Shapes[1].Material.Ambient = 1
 
-        rays := []Ray {
-                Ray {
-                        Origin: Tuple{X: 0, Y: 0, Z: -5, W:1},
-                        Direction: Tuple{X: 0, Y: 1, Z: 0, W: 0},
-                },
-                Ray {
-                        Origin: Tuple{X: 0, Y: 0, Z: -5, W:1},
-                        Direction: Tuple{X: 0, Y: 0, Z: 1, W: 0},
-                },
-                Ray {
-                        Origin: Tuple{X: 0, Y: 0, Z: -.75, W:1},
-                        Direction: Tuple{X: 0, Y: 0, Z: 1, W: 0},
-                },
-        }
+	rays := []Ray{
+		Ray{
+			Origin:    Tuple{X: 0, Y: 0, Z: -5, W: 1},
+			Direction: Tuple{X: 0, Y: 1, Z: 0, W: 0},
+		},
+		Ray{
+			Origin:    Tuple{X: 0, Y: 0, Z: -5, W: 1},
+			Direction: Tuple{X: 0, Y: 0, Z: 1, W: 0},
+		},
+		Ray{
+			Origin:    Tuple{X: 0, Y: 0, Z: -.75, W: 1},
+			Direction: Tuple{X: 0, Y: 0, Z: 1, W: 0},
+		},
+	}
 
-        expected := []Color {
-                Color {R: 0.0, G: 0.0, B: 0.0},
-                Color {R: 0.38066, G: 0.47583, B: 0.2855},
-                Color {R: 1.0, G: 1.0, B: 1.0},
-        }
+	expected := []Color{
+		Color{R: 0.0, G: 0.0, B: 0.0},
+		Color{R: 0.38066, G: 0.47583, B: 0.2855},
+		Color{R: 1.0, G: 1.0, B: 1.0},
+	}
 
-        for i, x := range expected {
-                t.Run(string(i), func(t *testing.T) {
-                        col, err := worlds[i].ColorAt(rays[i]); if err != nil {
-                                t.Log(err)
-                                t.Fail()
-                        }
+	for i, x := range expected {
+		t.Run(string(i), func(t *testing.T) {
+			col, err := worlds[i].ColorAt(rays[i])
+			if err != nil {
+				t.Log(err)
+				t.Fail()
+			}
 
-                        if !ColorEqual(col, x) {
-                                t.Logf("%+v != %+v", col, x)
-                                t.Fail()
-                        }
-                })
-        }
+			if !ColorEqual(col, x) {
+				t.Logf("%+v != %+v", col, x)
+				t.Fail()
+			}
+		})
+	}
 }

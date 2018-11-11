@@ -2,25 +2,25 @@ package raytracer
 
 import (
 	"math"
-        "sort"
+	"sort"
 )
 
 type Intersection struct {
-	T   float64
-	Obj Sphere
-        Point Tuple
-        EyeV Tuple
-        NormalV Tuple
-        Inside bool
+	T       float64
+	Obj     Sphere
+	Point   Tuple
+	EyeV    Tuple
+	NormalV Tuple
+	Inside  bool
 }
 
 func IntersectionEqual(i1, i2 Intersection) bool {
 	return i1.Inside == i2.Inside &&
-        FloatEqual(i1.T, i2.T) && 
-        TupleEqual(i1.Point, i2.Point) &&
-        TupleEqual(i1.EyeV, i2.EyeV) &&
-        TupleEqual(i1.NormalV, i2.NormalV) &&
-        SphereEqual(i1.Obj, i2.Obj)
+		FloatEqual(i1.T, i2.T) &&
+		TupleEqual(i1.Point, i2.Point) &&
+		TupleEqual(i1.EyeV, i2.EyeV) &&
+		TupleEqual(i1.NormalV, i2.NormalV) &&
+		SphereEqual(i1.Obj, i2.Obj)
 }
 
 func (s Sphere) Intersect(r Ray) ([]Intersection, error) {
@@ -81,19 +81,20 @@ func (w World) Intersect(r Ray) ([]Intersection, error) {
 		Intersection{T: math.MaxFloat64, Obj: Sphere{}},
 	}
 
-        worldIs := make([]Intersection, 0)
-        for _, s := range w.Shapes {
-                shapeIs, err := s.Intersect(r); if err != nil {
-                        return errValue, err
-                }
+	worldIs := make([]Intersection, 0)
+	for _, s := range w.Shapes {
+		shapeIs, err := s.Intersect(r)
+		if err != nil {
+			return errValue, err
+		}
 
-                for _, i := range shapeIs {
-                        worldIs = append(worldIs, i)
-                }
-        }
+		for _, i := range shapeIs {
+			worldIs = append(worldIs, i)
+		}
+	}
 
-        sort.Slice(worldIs, func(i, j int) bool { 
-                return worldIs[i].T < worldIs[j].T
-        })
-        return  worldIs, nil
+	sort.Slice(worldIs, func(i, j int) bool {
+		return worldIs[i].T < worldIs[j].T
+	})
+	return worldIs, nil
 }

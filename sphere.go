@@ -14,12 +14,12 @@ func SphereEqual(s1, s2 Sphere) bool {
 }
 
 func DefaultSphere() Sphere {
-        return Sphere {
-                Radius: 1.0,
-                Origin: Tuple{0, 0, 0, 1},
-                Transform: IdentityMatrix(4),
-                Material: DefaultMaterial(),
-        }
+	return Sphere{
+		Radius:    1.0,
+		Origin:    Tuple{0, 0, 0, 1},
+		Transform: IdentityMatrix(4),
+		Material:  DefaultMaterial(),
+	}
 }
 
 func (s Sphere) NormalAt(t Tuple) (Tuple, error) {
@@ -52,4 +52,3 @@ func (s Sphere) NormalAt(t Tuple) (Tuple, error) {
 
 	return worldNorm, nil
 }
-
